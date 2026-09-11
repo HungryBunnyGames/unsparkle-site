@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unsparkle — a third-person action roguelite</title>
+<meta name="description" content="Unsparkle is a fast, skill-rewarding third-person action roguelite. Descend from Astravale into Noctara, and carry the light back. In development at Hungry Bunny Games.">
+<link rel="canonical" href="https://unsparkle.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Unsparkle">
+<meta property="og:description" content="A fast, skill-rewarding third-person action roguelite. Descend into Noctara. Carry the light back.">
+<meta property="og:url" content="https://unsparkle.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#07070c">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#10024;</text></svg>">
+<style>
+  :root{
+    --ink:#07070c;
+    --ink-2:#0d0d16;
+    --veil:#14141f;
+    --line:rgba(233,210,150,.16);
+    --text:#d9d6e0;
+    --dim:#8e8a9c;
+    --gold:#e9d296;
+    --gold-hot:#ffe6a8;
+    --violet:#9b7fd4;
+    --measure:66ch;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--text);
+    font:16px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:var(--gold);text-decoration:none}
+  a:hover{color:var(--gold-hot);text-decoration:underline;text-underline-offset:3px}
+  h1,h2,h3{font-family:ui-serif,Georgia,"Times New Roman",serif;font-weight:600;letter-spacing:.01em;margin:0}
+
+  /* ---------- starfield ---------- */
+  .sky{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .sky::before,.sky::after{content:"";position:absolute;inset:-50%}
+  .sky::before{
+    background-image:
+      radial-gradient(1.4px 1.4px at 12% 18%, rgba(255,255,255,.85), transparent),
+      radial-gradient(1.2px 1.2px at 71% 8%,  rgba(255,246,220,.75), transparent),
+      radial-gradient(1px 1px   at 33% 61%,  rgba(255,255,255,.6),  transparent),
+      radial-gradient(1.6px 1.6px at 88% 44%, rgba(233,210,150,.8),  transparent),
+      radial-gradient(1px 1px   at 55% 88%,  rgba(255,255,255,.5),  transparent),
+      radial-gradient(1.2px 1.2px at 5%  73%, rgba(200,190,255,.6),  transparent),
+      radial-gradient(1px 1px   at 94% 79%,  rgba(255,255,255,.45), transparent),
+      radial-gradient(1.3px 1.3px at 44% 30%, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px   at 24% 92%,  rgba(233,210,150,.5),  transparent),
+      radial-gradient(1.1px 1.1px at 66% 52%, rgba(255,255,255,.5),  transparent);
+    background-size:52% 52%;
+    opacity:.55;
+    animation:drift 200s linear infinite;
+  }
+  .sky::after{
+    background:
+      radial-gradient(60% 45% at 50% -10%, rgba(155,127,212,.16), transparent 70%),
+      radial-gradient(55% 40% at 82% 12%, rgba(233,210,150,.09), transparent 70%);
+  }
+  @keyframes drift{to{transform:translate3d(-6%,-4%,0)}}
+  @media (prefers-reduced-motion:reduce){.sky::before{animation:none}}
+
+  /* ---------- layout ---------- */
+  .wrap{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding-inline:24px}
+  section{padding-block:clamp(56px,9vw,104px)}
+  .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);border:0;margin:0}
+
+  /* ---------- hero ---------- */
+  .hero{min-height:clamp(520px,92svh,860px);display:grid;align-content:center;text-align:center;padding-block:80px}
+  .eyebrow{
+    font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:28px;
+  }
+  .title{
+    font-size:clamp(52px,15vw,150px);
+    line-height:.92;
+    letter-spacing:.055em;
+    margin:0;
+    color:#fff;
+    text-shadow:0 0 46px rgba(233,210,150,.3), 0 0 110px rgba(155,127,212,.22);
+  }
+  .title .dim{color:var(--gold);opacity:.95}
+  .tagline{
+    margin:28px auto 0;max-width:34ch;
+    font-size:clamp(16px,2.4vw,21px);color:var(--text);
+  }
+  .kicker{
+    margin:14px auto 0;max-width:44ch;color:var(--dim);font-size:15px;
+  }
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:40px}
+  .btn{
+    display:inline-block;padding:13px 26px;border-radius:999px;
+    border:1px solid var(--line);color:var(--gold);
+    font-size:14px;letter-spacing:.08em;text-transform:uppercase;
+    background:rgba(233,210,150,.05);
+    transition:background .2s,border-color .2s,color .2s,transform .2s;
+  }
+  .btn:hover{background:rgba(233,210,150,.12);border-color:rgba(233,210,150,.42);color:var(--gold-hot);text-decoration:none;transform:translateY(-1px)}
+  .btn.ghost{color:var(--dim);background:transparent}
+  .btn.ghost:hover{color:var(--text)}
+  .scrollhint{margin-top:56px;color:var(--dim);font-size:11px;letter-spacing:.28em;text-transform:uppercase;opacity:.7}
+
+  /* ---------- generic ---------- */
+  .label{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);opacity:.8;margin-bottom:18px}
+  h2{font-size:clamp(26px,4.4vw,40px);line-height:1.15;margin-bottom:20px;color:#fff}
+  .lede{font-size:clamp(16px,2vw,18.5px);max-width:var(--measure);color:var(--text)}
+  .lede + .lede{margin-top:16px}
+  .muted{color:var(--dim)}
+
+  /* ---------- two-world split ---------- */
+  .worlds{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:44px}
+  .world{
+    border:1px solid var(--line);border-radius:14px;padding:28px;
+    background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,0));
+  }
+  .world h3{font-size:22px;margin-bottom:6px;color:#fff}
+  .world .sub{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);margin-bottom:14px}
+  .world p{margin:0;color:var(--dim);font-size:15px}
+  .world.light{border-color:rgba(233,210,150,.26);box-shadow:inset 0 0 60px rgba(233,210,150,.05)}
+  .world.light h3{color:var(--gold)}
+  .world.dark{border-color:rgba(155,127,212,.24);box-shadow:inset 0 0 60px rgba(155,127,212,.06)}
+  .world.dark h3{color:var(--violet)}
+
+  /* ---------- pillars ---------- */
+  .pillars{display:grid;gap:22px 34px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin-top:44px;counter-reset:p}
+  .pillar{padding-top:20px;border-top:1px solid var(--line)}
+  .pillar::before{
+    counter-increment:p;content:counter(p,decimal-leading-zero);
+    display:block;font-family:ui-serif,Georgia,serif;font-size:13px;color:var(--gold);opacity:.6;margin-bottom:10px;letter-spacing:.1em;
+  }
+  .pillar h3{font-size:18px;margin-bottom:8px;color:#fff}
+  .pillar p{margin:0;color:var(--dim);font-size:14.5px;line-height:1.6}
+
+  /* ---------- arsenal table ---------- */
+  .tablewrap{margin-top:40px;overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+  table{border-collapse:collapse;width:100%;min-width:520px;font-size:15px}
+  caption{text-align:left;padding:20px 24px 0;color:var(--dim);font-size:13.5px}
+  th,td{padding:15px 24px;text-align:left;border-bottom:1px solid rgba(233,210,150,.09);vertical-align:top}
+  thead th{
+    font:600 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--dim);padding-block:18px;
+  }
+  tbody tr:last-child td{border-bottom:0}
+  tbody th{font-weight:600;color:var(--gold);white-space:nowrap;font-size:15px}
+  td{color:var(--dim)}
+
+  /* ---------- boons ---------- */
+  .boons{display:flex;flex-wrap:wrap;gap:10px;margin-top:36px}
+  .boon{
+    display:inline-flex;align-items:center;gap:9px;
+    border:1px solid var(--line);border-radius:999px;padding:9px 17px;font-size:14px;color:var(--text);
+  }
+  .dot{width:8px;height:8px;border-radius:50%;flex:none;box-shadow:0 0 12px currentColor;background:currentColor}
+
+  /* ---------- status ---------- */
+  .status{
+    border:1px solid var(--line);border-radius:16px;padding:clamp(28px,5vw,48px);
+    background:linear-gradient(180deg,rgba(233,210,150,.05),rgba(255,255,255,0));
+    text-align:center;
+  }
+  .status h2{margin-bottom:14px}
+  .status .lede{margin-inline:auto;text-align:center}
+  .pill{
+    display:inline-flex;align-items:center;gap:9px;margin-bottom:22px;
+    border:1px solid rgba(233,210,150,.3);border-radius:999px;padding:7px 16px;
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);
+  }
+  .pulse{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.32}}
+  @media (prefers-reduced-motion:reduce){.pulse{animation:none}}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);padding-block:40px;text-align:center;color:var(--dim);font-size:13.5px}
+  footer p{margin:0 0 8px}
+
+  @media (max-width:520px){
+    .wrap{padding-inline:18px}
+    th,td{padding:13px 16px}
+  }
+</style>
+</head>
+<body>
+<div class="sky" aria-hidden="true"></div>
+
+<header class="wrap hero">
+  <p class="eyebrow">Hungry Bunny Games</p>
+  <h1 class="title">UN<span class="dim">SPARKLE</span></h1>
+  <p class="tagline">A third-person action roguelite about carrying the light back.</p>
+  <p class="kicker">Fast, readable, skill-rewarding combat. Every run ends. What you learned doesn&rsquo;t.</p>
+  <nav class="cta">
+    <a class="btn" href="#world">Enter Noctara</a>
+    <a class="btn ghost" href="https://hungrybunnygames.com">The studio</a>
+  </nav>
+  <p class="scrollhint">In development</p>
+</header>
+
+<hr class="rule">
+
+<section class="wrap" id="world">
+  <p class="label">The world</p>
+  <h2>Two places, and a long way down between them.</h2>
+  <p class="lede">The Sowing seeded starlight into every living person. You are Starborn &mdash; and so is everyone you are trying to save. Astravale still holds a little of that light. Noctara is what happens where it went out.</p>
+  <p class="lede muted">You descend. You fight through four biomes of a world that stopped being lit. You die, or you don&rsquo;t, and either way you come home changed and go back down again.</p>
+
+  <div class="worlds">
+    <article class="world light">
+      <h3>Astravale</h3>
+      <p class="sub">The hub &middot; the light</p>
+      <p>A town built on a fallen star. A forge, an archive, a shrine, and people who remember your name between runs. Everything permanent you earn, you spend here.</p>
+    </article>
+    <article class="world dark">
+      <h3>Noctara</h3>
+      <p class="sub">The run &middot; the dark</p>
+      <p>Four biomes of perpetual night, laid out fresh each descent, ending at the Sovereign. Nothing you carry in survives the trip &mdash; except what you know.</p>
+    </article>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <p class="label">Combat</p>
+  <h2>Methodical at high speed.</h2>
+  <p class="lede">Not Souls-slow, not a button-mashing blender. The design brief has been the same since the first commit: fast enough to feel expressive, readable enough that a death is always your own fault.</p>
+
+  <div class="pillars">
+    <article class="pillar">
+      <h3>Every hit feels like a hit</h3>
+      <p>Hitstop, camera shake, impact VFX and layered sound on every connection &mdash; tuned per weapon, so a greatsword and a pair of daggers do not land the same way.</p>
+    </article>
+    <article class="pillar">
+      <h3>Aggression is rewarded</h3>
+      <p>Damage scales with pressure. Lifesteal, kill streaks and style meters all pay you for stepping in. Turtling is a way to lose slowly.</p>
+    </article>
+    <article class="pillar">
+      <h3>Death is readable</h3>
+      <p>Every enemy attack is telegraphed before it commits. You should die because you misread the tell, never because there wasn&rsquo;t one.</p>
+    </article>
+    <article class="pillar">
+      <h3>Stunlock is impossible &mdash; both ways</h3>
+      <p>Poise, hyper-armour windows and a stunlock breaker run in both directions. Nothing gets chain-locked to death, including you.</p>
+    </article>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <p class="label">The arsenal</p>
+  <h2>Five weapons that play like five games.</h2>
+  <p class="lede">You pick one at the start of a run and you live with it. Each carries its own moveset, its own resource, and its own answer to being surrounded.</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Air combos, dash attacks and charged heavies are per-weapon, not shared.</caption>
+      <thead>
+        <tr><th scope="col">Weapon</th><th scope="col">Feel</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Greatsword</th><td>Slow, heavy, wide arcs that stagger a room. Charged ground smash. The signature.</td></tr>
+        <tr><th scope="row">Twin Blades</th><td>Four-hit flurries, high crit, low damage per swing. Dash straight through an enemy to land behind it.</td></tr>
+        <tr><th scope="row">Battle Axe</th><td>Two hits, enormous damage, breaks shields outright. Commit and mean it.</td></tr>
+        <tr><th scope="row">Bow</th><td>Spacing as a skill. Charged armour-piercing shots, dodge-cancel shots with invulnerability frames.</td></tr>
+        <tr><th scope="row">Staff</th><td>Fire, ice and lightning on a cycle, metered by Ki, which you refill by hitting things &mdash; no back-line turret.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <p class="label">Boons</p>
+  <h2>Six families. No two runs stack the same.</h2>
+  <p class="lede">Pick one of three at a time, and keep picking. Same boon twice upgrades it along a six-step curve; several from one family start resonating; three unlocks a mastery. Some cross-family pairs do things nobody wrote down.</p>
+
+  <div class="boons">
+    <span class="boon"><i class="dot" style="color:#e9d296"></i>Celestial &mdash; light, crits</span>
+    <span class="boon"><i class="dot" style="color:#9b7fd4"></i>Abyssal &mdash; lifesteal, desperation</span>
+    <span class="boon"><i class="dot" style="color:#6fd6e8"></i>Storm &mdash; chain lightning, speed</span>
+    <span class="boon"><i class="dot" style="color:#e8934a"></i>Ember &mdash; burn, area</span>
+    <span class="boon"><i class="dot" style="color:#79c98a"></i>Verdant &mdash; healing, thorns</span>
+    <span class="boon"><i class="dot" style="color:#d4596b"></i>Void &mdash; chaos, risk</span>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <div class="status">
+    <span class="pill"><i class="pulse"></i>In active development</span>
+    <h2>It isn&rsquo;t finished.</h2>
+    <p class="lede">Unsparkle is being built in Unity by a very small studio. Combat, the hub, the run loop and the character creator are playable today; the world around them is still going up. There is no release date and no store page yet &mdash; when there is one, it will be here first.</p>
+    <nav class="cta">
+      <a class="btn" href="https://hungrybunnygames.com">Hungry Bunny Games</a>
+    </nav>
+  </div>
+</section>
+
+<footer class="wrap">
+  <p>Unsparkle &mdash; a Hungry Bunny Games project.</p>
+  <p class="muted">&copy; 2026 Hungry Bunny Games. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
